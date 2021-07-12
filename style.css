@@ -3,12 +3,13 @@ html, body {
     margin: 0;
     height: 100%;
     width: 100%;
+    background-color: tan;
 }
 #title {
     height: 10%;
     min-height: 75px;
     width: 100%;
-    border: 1px solid black;    
+    border: 1px solid black;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -20,7 +21,7 @@ h1 {
 #bookShelf {
     padding-top: 50px;
     padding-bottom: 50px;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -41,9 +42,9 @@ span p {
     text-align: center;    
 }
 span div {
-    border: 1px solid black;
+    /* border: 1px solid black; */
     width: 100%;
-    text-align: center;    
+    text-align: center;
 }
 
 .readStatusContainer {
@@ -54,15 +55,17 @@ span div {
 }
 #newBookContainer {
     margin: auto;
-    width: 100px;
+    width: 75px;
     
 }
 #newBookContainer button {
-    min-width: 100px;
-    min-height: 87px;
-    background: url(/img/plus-icon.jpg) no-repeat;
-    background-size: 100px;
+    min-width: 75px;
+    min-height: 75px;
+    background: url(/img/plus-icon.png) no-repeat;
+    background-color: rgba(87, 62, 38, 0.534);
+    background-size: 75px;
     padding: 0px;
     margin: 0px;
+    border-radius: 4px;
     /* float: none; */
 }
