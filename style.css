@@ -24,9 +24,8 @@ h1 {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    flex-wrap: wrap;
     min-height:  200px;
-    max-height: 400px;
-    height: 25%;
 }
 #bookShelf span {
     border: 1px solid black;
