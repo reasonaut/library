@@ -4,13 +4,34 @@ const testBook1 = {
     author: "Jonathan Swift",
     isRead: true
 }
-let  myLibrary = [testBook1];
-displayLibrary(myLibrary);
+const testBook2 = {
+    title: "All the Pretty Horses",
+    author: "Cormack Mcarthy",
+    isRead: true
+}
+const testBook3 = {
+    title: "Dune",
+    author: "Frank Herbert",
+    isRead: true
+}
+const testBook4 = {
+    title: "Zen and the Art of Motorcycle Maintenance",
+    author: "Robert Pirsig",
+    isRead: true
+}
+const testBook5 = {
+    title: "Where the Crawdads Sing",
+    author: "Delia Owens",
+    isRead: true
+}
 
+let  myLibrary = [testBook1, testBook2, testBook3, testBook4, testBook5];
+const libraryContainer = document.querySelector('#bookShelf');
+displayLibrary(myLibrary);
 function Book(title, author, numberOfPages, isRead){
     this.title = title;
     this.author = author;
-    this.numberOfPages = this.numberOfPages;
+    this.numberOfPages = numberOfPages;
     this.readStatus = isRead;
 }
 
@@ -22,7 +43,6 @@ function removeBookFromLibrary(book){
 
 }
 function displayLibrary(library){
-    const libraryContainer = document.querySelector('#bookShelf');
     for (i = 0; i < myLibrary.length; i++){
         const bookObj = library[i];
         const bookEl = createBookElement(bookObj);
@@ -70,6 +90,12 @@ function toggleReadStatus(eventData){
         bookData.isRead = true;
     }
 }
-function deleteBook(){
-
+function deleteBook(eventData){
+    const bookIndex = eventData.target.parentElement.parentElement.getAttribute('data-id');
+    
+    delete myLibrary[bookIndex];
+    const displayOfDeletedBook = libraryContainer.querySelector(`span[data-id="${bookIndex}"]`);
+    displayOfDeletedBook.remove();
+    // re-display updated library
+    
 }
