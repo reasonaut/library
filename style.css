@@ -30,21 +30,29 @@ h1 {
 }
 #bookShelf span {
     border: 1px solid black;
-    min-height:  200px;
-    max-height: 200px;
+    min-height:  250px;
+    max-height: 250px;
     min-width: 50px;
     flex-direction: column;
     justify-content: flex-start;
     display: flex;
+    background-color: rgba(68, 51, 29, 0.336);
+    
 }
 span p {
+    writing-mode: vertical-lr;
+    text-orientation: upright;
     min-height: 127px;
-    text-align: center;    
+    text-align: center;
+    margin: auto;
 }
 span div {
     /* border: 1px solid black; */
     width: 100%;
     text-align: center;
+}
+.isRead {
+    background-color: rgb(108, 109, 41);
 }
 
 .readStatusContainer {
@@ -62,7 +70,7 @@ span div {
     min-width: 75px;
     min-height: 75px;
     background: url(/img/plus-icon.png) no-repeat;
-    background-color: rgba(87, 62, 38, 0.534);
+    background-color: rgba(68, 51, 29, 0.336);
     background-size: 75px;
     padding: 0px;
     margin: 0px;
