@@ -24,23 +24,21 @@ const testBook5 = {
     author: "Delia Owens",
     isRead: true
 }
-
+document.querySelector('#newBookButton').addEventListener('click', createNewBookForm);
 let  myLibrary = [testBook1, testBook2, testBook3, testBook4, testBook5];
 const libraryContainer = document.querySelector('#bookShelf');
 displayLibrary(myLibrary);
+
+
+
 function Book(title, author, numberOfPages, isRead){
     this.title = title;
     this.author = author;
     this.numberOfPages = numberOfPages;
     this.readStatus = isRead;
 }
-
-
 function addBookToLibrary(book){
     myLibrary.push(book);
-}
-function removeBookFromLibrary(book){
-
 }
 function displayLibrary(library){
     for (i = 0; i < myLibrary.length; i++){
@@ -71,7 +69,7 @@ function createBookElement(book){
     const delButton = delContainer.appendChild(document.createElement('button'));
     delButton.classList.add('delButton');
     delButton.innerText = 'Delete';
-    delButton.addEventListener('click', deleteBook);
+    delButton.addEventListener('click', removeBookFromLibrary);
     // add buttons
     bookContainer.appendChild(readStatusContainer);
     bookContainer.appendChild(delContainer);
@@ -90,12 +88,62 @@ function toggleReadStatus(eventData){
         bookData.isRead = true;
     }
 }
-function deleteBook(eventData){
+function removeBookFromLibrary(eventData){
     const bookIndex = eventData.target.parentElement.parentElement.getAttribute('data-id');
-    
     delete myLibrary[bookIndex];
-    const displayOfDeletedBook = libraryContainer.querySelector(`span[data-id="${bookIndex}"]`);
-    displayOfDeletedBook.remove();
-    // re-display updated library
+    libraryContainer.querySelector(`span[data-id="${bookIndex}"]`).remove();
+}
+function createNewBookForm(){
+    // remove new book button
+    document.querySelector('#newBookContainer').remove()
     
+    const formSpan = libraryContainer.appendChild(document.createElement('span'));
+    formSpan.id = 'newBookForm';
+    
+    const createNewBookForm = formSpan.appendChild(document.createElement('form'));
+    // title
+    const nameInputLabel = createNewBookForm.appendChild(document.createElement('label'));
+    createNewBookForm.appendChild(document.createElement('br'));
+    nameInputLabel.setAttribute('for', 'title');
+    nameInputLabel.textContent = 'Title';
+    const nameInput = createNewBookForm.appendChild(document.createElement('input'));
+    nameInput.id = 'title';
+    nameInput.setAttribute('type', 'text');
+    //author
+    const authorInputLabel = createNewBookForm.appendChild(document.createElement('label'));
+    createNewBookForm.appendChild(document.createElement('br'));
+    authorInputLabel.setAttribute('for', 'author');
+    authorInputLabel.textContent = 'Author';
+    const authorInput = createNewBookForm.appendChild(document.createElement('input'));
+    authorInput.id = 'author';
+    authorInput.setAttribute('type', 'text');
+    //pages
+    const pagesInputLabel = createNewBookForm.appendChild(document.createElement('label'));
+    createNewBookForm.appendChild(document.createElement('br'));
+    pagesInputLabel.setAttribute('for', 'pages');
+    pagesInputLabel.textContent = 'Pages';
+    const pagesInput = createNewBookForm.appendChild(document.createElement('input'));
+    pagesInput.id = 'pages';
+    pagesInput.setAttribute('type', 'text');
+    //isRead
+    const radioLabel = createNewBookForm.appendChild(document.createElement('p'));
+    radioLabel.textContent = 'Read?';
+    const isReadInputLabelYes = createNewBookForm.appendChild(document.createElement('label'));
+    createNewBookForm.appendChild(document.createElement('br'));
+    isReadInputLabelYes.setAttribute('for', 'isReadYes');
+    isReadInputLabelYes.textContent = 'Yes';
+    const isReadInputYes = createNewBookForm.appendChild(document.createElement('input'));
+    isReadInputYes.id = 'isReadYes';
+    isReadInputYes.name = 'read_status';
+    isReadInputYes.value = true;
+    isReadInputYes.setAttribute('type', 'radio');
+    const isReadInputLabelNo = createNewBookForm.appendChild(document.createElement('label'));
+    createNewBookForm.appendChild(document.createElement('br'));
+    isReadInputLabelNo.setAttribute('for', 'isReadNo');
+    isReadInputLabelNo.textContent = 'No';
+    const isReadInputNo = createNewBookForm.appendChild(document.createElement('input'));
+    isReadInputNo.id = 'isReadNo';
+    isReadInputNo.name = 'read_status';
+    isReadInputNo.value = true;
+    isReadInputNo.setAttribute('type', 'radio');
 }
