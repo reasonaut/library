@@ -29,24 +29,25 @@ let  myLibrary = [testBook1, testBook2, testBook3, testBook4, testBook5];
 const libraryContainer = document.querySelector('#bookShelf');
 displayLibrary(myLibrary);
 
-
-
 function Book(title, author, numberOfPages, isRead){
     this.title = title;
     this.author = author;
     this.numberOfPages = numberOfPages;
-    this.readStatus = isRead;
+    this.isRead = isRead;
+    return this;
 }
 function addBookToLibrary(book){
     myLibrary.push(book);
+    const bookEl = createBookElement(book);
+    //add book to library display
+    bookEl.setAttribute('data-id', i);
+    libraryContainer.appendChild(bookEl);
 }
 function displayLibrary(library){
     for (i = 0; i < myLibrary.length; i++){
         const bookObj = library[i];
         const bookEl = createBookElement(bookObj);
         //add book to library display
-        console.log(bookEl);
-        // add identifier
         bookEl.setAttribute('data-id', i);
         libraryContainer.appendChild(bookEl);
     }
@@ -76,7 +77,7 @@ function createBookElement(book){
     return bookContainer;
 }
 function toggleReadStatus(eventData){
-    // check current status
+    // check current state
     const bookIndex = eventData.target.parentElement.parentElement.getAttribute('data-id');
     const bookData = myLibrary[parseInt(bookIndex)];
     // update state
@@ -95,21 +96,19 @@ function removeBookFromLibrary(eventData){
 }
 function createNewBookForm(){
     // remove new book button
-    document.querySelector('#newBookContainer').remove()
-    
+    document.querySelector('#newBookContainer').style.display = 'none';
     const formSpan = libraryContainer.appendChild(document.createElement('span'));
     formSpan.id = 'newBookForm';
-    
     const createNewBookForm = formSpan.appendChild(document.createElement('form'));
     // title
-    const nameInputLabel = createNewBookForm.appendChild(document.createElement('label'));
+    const titleInputLabel = createNewBookForm.appendChild(document.createElement('label'));
     createNewBookForm.appendChild(document.createElement('br'));
-    nameInputLabel.setAttribute('for', 'title');
-    nameInputLabel.textContent = 'Title';
+    titleInputLabel.setAttribute('for', 'titleField');
+    titleInputLabel.textContent = 'Title';
     const nameInput = createNewBookForm.appendChild(document.createElement('input'));
-    nameInput.id = 'title';
+    nameInput.id = 'titleField';
     nameInput.setAttribute('type', 'text');
-    //author
+    // author
     const authorInputLabel = createNewBookForm.appendChild(document.createElement('label'));
     createNewBookForm.appendChild(document.createElement('br'));
     authorInputLabel.setAttribute('for', 'author');
@@ -117,7 +116,8 @@ function createNewBookForm(){
     const authorInput = createNewBookForm.appendChild(document.createElement('input'));
     authorInput.id = 'author';
     authorInput.setAttribute('type', 'text');
-    //pages
+    // pages
+    createNewBookForm.appendChild(document.createElement('br'));
     const pagesInputLabel = createNewBookForm.appendChild(document.createElement('label'));
     createNewBookForm.appendChild(document.createElement('br'));
     pagesInputLabel.setAttribute('for', 'pages');
@@ -125,25 +125,62 @@ function createNewBookForm(){
     const pagesInput = createNewBookForm.appendChild(document.createElement('input'));
     pagesInput.id = 'pages';
     pagesInput.setAttribute('type', 'text');
-    //isRead
+    // isRead
     const radioLabel = createNewBookForm.appendChild(document.createElement('p'));
     radioLabel.textContent = 'Read?';
     const isReadInputLabelYes = createNewBookForm.appendChild(document.createElement('label'));
-    createNewBookForm.appendChild(document.createElement('br'));
     isReadInputLabelYes.setAttribute('for', 'isReadYes');
     isReadInputLabelYes.textContent = 'Yes';
     const isReadInputYes = createNewBookForm.appendChild(document.createElement('input'));
-    isReadInputYes.id = 'isReadYes';
-    isReadInputYes.name = 'read_status';
-    isReadInputYes.value = true;
     isReadInputYes.setAttribute('type', 'radio');
-    const isReadInputLabelNo = createNewBookForm.appendChild(document.createElement('label'));
+    isReadInputYes.id = 'isReadYes';
+    isReadInputYes.name = 'readStatus';
+    isReadInputYes.value = true;
     createNewBookForm.appendChild(document.createElement('br'));
+    const isReadInputLabelNo = createNewBookForm.appendChild(document.createElement('label'));
     isReadInputLabelNo.setAttribute('for', 'isReadNo');
     isReadInputLabelNo.textContent = 'No';
     const isReadInputNo = createNewBookForm.appendChild(document.createElement('input'));
-    isReadInputNo.id = 'isReadNo';
-    isReadInputNo.name = 'read_status';
-    isReadInputNo.value = true;
     isReadInputNo.setAttribute('type', 'radio');
+    isReadInputNo.id = 'isReadNo';
+    isReadInputNo.name = 'readStatus';
+    isReadInputNo.value = false;
+    // button span
+    const buttonSpan = createNewBookForm.appendChild(document.createElement('span'));
+    buttonSpan.id = 'formButtonsContainer';
+    // confirm button
+    const confirmButton = buttonSpan.appendChild(document.createElement('button'));
+    confirmButton.id = 'confirmNewBookButton';
+    confirmButton.style.background = 'url(/img/plus-icon.png) no-repeat';
+    confirmButton.style.backgroundSize = '22px';
+    confirmButton.style.width = '25px';
+    confirmButton.style.height = '25px';
+    confirmButton.addEventListener('click', createNewBook);
+    // cancel button
+    const cancelButton = buttonSpan.appendChild(document.createElement('button'));
+    cancelButton.id = 'cancelNewBookButton';
+    cancelButton.textContent = 'X';
+    cancelButton.style.width = '25px';
+    cancelButton.style.height = '25px';
+    cancelButton.addEventListener('click', cancelCreateNewBook);
+}
+function createNewBook(eventData){
+    eventData.preventDefault();
+    const newBookForm = document.getElementById('newBookForm');
+    // validate data
+    const title = document.getElementById('titleField').value;
+    const author = document.getElementById('author').value;
+    const pages = document.getElementById('pages').value;
+    const isRead = document.getElementById('isReadYes').checked;
+    if (title === '' || author === '' || isNaN(parseInt(pages))){
+        return;
+    }
+    const newBook = Book(title, author, pages, isRead);
+    newBookForm.style.display = 'none';
+    document.querySelector('#newBookContainer').style.display = 'block';
+    addBookToLibrary(newBook);
+}
+function cancelCreateNewBook(eventData){
+    eventData.preventDefault();
+    // todo: add removal of new book form and display of new book button
 }

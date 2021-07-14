@@ -17,7 +17,6 @@ html, body {
 }
 h1 {
     text-align: center;
-    
 }
 #bookShelf {
     padding-top: 50px;
@@ -38,7 +37,6 @@ h1 {
     justify-content: flex-start;
     display: flex;
     background-color: rgba(68, 51, 29, 0.336);
-    
 }
 span p {
     writing-mode: vertical-rl;
@@ -56,13 +54,6 @@ span div {
 .isRead {
     background-color: rgb(130, 131, 66);
 }
-
-.readStatusContainer {
-
-}
-.removeOptionContainer {
-
-}
 #newBookContainer {
     margin: auto;
     width: 75px;    
@@ -76,19 +67,26 @@ span div {
     padding: 0px;
     margin: 0px;
     border-radius: 4px;
-    /* float: none; */
 }
 #newBookForm {
-    background-color: white !important;
-    width: 250px;  
+    width: 250px;
     text-align: center;  
 }
 #newBookForm input {
-    width: 243px;
-    min-height: 5px;
+    margin-bottom: 5px;
 }
 #newBookForm p {
     writing-mode:initial;
     text-orientation: upright;
     min-height: 20px;
 }
+#formButtonsContainer {
+    max-height: 28px !important;
+    min-height: 28px !important;
+    position: relative;
+}
+#cancelNewBookButton {
+    position: absolute;
+    right: 0px;
+}
+
