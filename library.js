@@ -10,12 +10,14 @@ function addBookToLibrary(book){
     localStorage.setItem('localLibrary', JSON.stringify(myLibrary));
     const bookEl = createBookElement(book);
     // add book to library display
-    bookEl.setAttribute('data-id', i);
+    bookEl.setAttribute('data-id', parseInt(myLibrary[myLibrary.length - 1] + 1));
     libraryContainer.appendChild(bookEl);
 }
 function displayLibrary(library){
     for (i = 0; i < myLibrary.length; i++){
         const bookObj = library[i];
+        // skip empty objects left in array from book deletions
+        if (bookObj.title === undefined) continue;
         const bookEl = createBookElement(bookObj);
         // add book to library display
         bookEl.setAttribute('data-id', i);
@@ -61,7 +63,10 @@ function toggleReadStatus(eventData){
 }
 function removeBookFromLibrary(eventData){
     const bookIndex = eventData.target.parentElement.parentElement.getAttribute('data-id');
-    delete myLibrary[bookIndex];
+    // insert empty object at deleted book's index to preserve span attribute references
+    myLibrary.splice(bookIndex, 1, {});
+    // update local storage
+    localStorage.setItem('localLibrary', JSON.stringify(myLibrary));
     libraryContainer.querySelector(`span[data-id="${bookIndex}"]`).remove();
 }
 function createNewBookForm(){
