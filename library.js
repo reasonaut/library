@@ -1,45 +1,15 @@
-// generate test books
-const testBook1 = {
-    title: "Gulliver's Travels",
-    author: "Jonathan Swift",
-    isRead: true
-}
-const testBook2 = {
-    title: "All the Pretty Horses",
-    author: "Cormack Mcarthy",
-    isRead: true
-}
-const testBook3 = {
-    title: "Dune",
-    author: "Frank Herbert",
-    isRead: true
-}
-const testBook4 = {
-    title: "Zen and the Art of Motorcycle Maintenance",
-    author: "Robert Pirsig",
-    isRead: true
-}
-const testBook5 = {
-    title: "Where the Crawdads Sing",
-    author: "Delia Owens",
-    isRead: true
-}
-document.querySelector('#newBookButton').addEventListener('click', createNewBookForm);
-let  myLibrary = [testBook1, testBook2, testBook3, testBook4, testBook5];
-const libraryContainer = document.querySelector('#bookShelf');
-displayLibrary(myLibrary);
-
 function Book(title, author, numberOfPages, isRead){
     this.title = title;
     this.author = author;
     this.numberOfPages = numberOfPages;
     this.isRead = isRead;
-    return this;
 }
 function addBookToLibrary(book){
     myLibrary.push(book);
+    // persist library to local storage
+    localStorage.setItem('localLibrary', JSON.stringify(myLibrary));
     const bookEl = createBookElement(book);
-    //add book to library display
+    // add book to library display
     bookEl.setAttribute('data-id', i);
     libraryContainer.appendChild(bookEl);
 }
@@ -47,7 +17,7 @@ function displayLibrary(library){
     for (i = 0; i < myLibrary.length; i++){
         const bookObj = library[i];
         const bookEl = createBookElement(bookObj);
-        //add book to library display
+        // add book to library display
         bookEl.setAttribute('data-id', i);
         libraryContainer.appendChild(bookEl);
     }
@@ -175,12 +145,91 @@ function createNewBook(eventData){
     if (title === '' || author === '' || isNaN(parseInt(pages))){
         return;
     }
-    const newBook = Book(title, author, pages, isRead);
-    newBookForm.style.display = 'none';
+    const newBook = new Book(title, author, pages, isRead);
+    newBookForm.remove();
     document.querySelector('#newBookContainer').style.display = 'block';
     addBookToLibrary(newBook);
 }
 function cancelCreateNewBook(eventData){
     eventData.preventDefault();
-    // todo: add removal of new book form and display of new book button
+    const form = eventData.target.parentElement.parentElement;
+    newBookForm.remove();
+    document.getElementById('newBookContainer').style.display = 'block';
 }
+// generate test books
+const testBook1 = {
+    title: "Gulliver's Travels",
+    author: "Jonathan Swift",
+    isRead: false,
+    numberOfPages: 299
+}
+const testBook2 = {
+    title: "All the Pretty Horses",
+    author: "Cormack Mcarthy",
+    isRead: false,
+    numberOfPages: 291
+}
+const testBook3 = {
+    title: "Dune",
+    author: "Frank Herbert",
+    isRead: true,
+    numberOfPages: 468
+}
+const testBook4 = {
+    title: "Zen and the Art of Motorcycle Maintenance",
+    author: "Robert Pirsig",
+    isRead: true,
+    numberOfPages: 370
+}
+const testBook5 = {
+    title: "Where the Crawdads Sing",
+    author: "Delia Owens",
+    isRead: true,
+    numberOfPages: 225
+}
+const testBook6 = {
+    title: "The Professor and the Madman",
+    author: "Simon Winchester",
+    isRead: false,
+    numberOfPages: 237
+}
+const testBook7 = {
+    title: "Kundalini: The Evolutionary Energy in Man",
+    author: "Gopi Krishna",
+    isRead: true,
+    numberOfPages: 250
+}
+const testBook8 = {
+    title: "Player Piano",
+    author: "Kurt Vonnegut, Jr.",
+    isRead: true,
+    numberOfPages: 320
+}
+const testBook9 = {
+    title: "Mindsight: The New Science of Personal Transformation",
+    author: "Daniel J. Siegel, M.D.",
+    isRead: false,
+    numberOfPages: 293
+}
+const testBook10 = {
+    title: "A Bit on the Side",
+    author: "William Trevor",
+    isRead: false,
+    numberOfPages: 243
+}
+const testBook11 = {
+    title: "21 Lessons for the 21st Century",
+    author: "Yuval Noah Harari",
+    isRead: true,
+    numberOfPages: 349
+}
+// check for locally stored library
+let myLibrary = localStorage.getItem('localLibrary');
+if (myLibrary) myLibrary = JSON.parse(myLibrary);
+if (!myLibrary){
+    myLibrary = [testBook1, testBook2, testBook3, testBook4, testBook5, testBook6, 
+        testBook7, testBook8, testBook9, testBook10, testBook11];
+}
+document.querySelector('#newBookButton').addEventListener('click', createNewBookForm);
+const libraryContainer = document.querySelector('#bookShelf');
+displayLibrary(myLibrary);
