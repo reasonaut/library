@@ -14,6 +14,7 @@ function addBookToLibrary(book){
     libraryContainer.appendChild(bookEl);
 }
 function displayLibrary(library){
+    libraryContainer.innerHTML = '';
     for (i = 0; i < myLibrary.length; i++){
         const bookObj = library[i];
         // skip empty objects left in array from book deletions
@@ -46,6 +47,8 @@ function createBookElement(book){
     // add buttons
     bookContainer.appendChild(readStatusContainer);
     bookContainer.appendChild(delContainer);
+    // add edit functionality
+    bookContainer.addEventListener('click', editBook);
     return bookContainer;
 }
 function toggleReadStatus(eventData){
@@ -68,6 +71,73 @@ function removeBookFromLibrary(eventData){
     // update local storage
     localStorage.setItem('localLibrary', JSON.stringify(myLibrary));
     libraryContainer.querySelector(`span[data-id="${bookIndex}"]`).remove();
+}
+function editBook(eventData){
+    eventData.stopPropogation();
+    const book = eventData.target;
+    let bookId;
+    if (book.tagName.toLowerCase() === 'span') {
+        bookId = book.getAttribute('data-id');
+    } else {
+        bookId = book.parentElement.getAttribute('data-id');
+    }
+    const bookData = myLibrary[bookId];
+    displayEditWindow(bookData, bookId);
+}
+function displayEditWindow(bookData, bookId){
+    const editWindow = popupWindow('editWindow', 250, 260);
+    const windowBody = editWindow.document.body;
+    windowBody.innerHTML = '';
+    windowBody.style.background = 'rgba(68, 51, 29, 0.336)';
+    editWindow.focus();
+    windowBody.style.textAlign = 'center';
+    const title = windowBody.appendChild(document.createElement('p'));
+    title.innerText = 'Title';
+    title.setAttribute('data-id', bookId);
+    const titleField = windowBody.appendChild(document.createElement('input'));
+    titleField.setAttribute('type', 'text');
+    titleField.style.textAlign = 'center';
+    titleField.style.width = '250px';
+    titleField.defaultValue = bookData.title;
+    const author = windowBody.appendChild(document.createElement('p'));
+    author.innerText = 'Author';
+    const authorField = windowBody.appendChild(document.createElement('input'));
+    authorField.setAttribute('type', 'text');
+    authorField.style.textAlign = 'center';
+    authorField.style.width = '250px';
+    authorField.defaultValue = bookData.author;
+    const pages = windowBody.appendChild(document.createElement('p'));
+    pages.innerText = 'Pages';
+    const pagesField = windowBody.appendChild(document.createElement('input'));
+    pagesField.setAttribute('type', 'text');
+    pagesField.style.textAlign = 'center';
+    pagesField.style.width = '250px';
+    pagesField.defaultValue = bookData.numberOfPages;
+    const submitButton = windowBody.appendChild(document.createElement('button'));
+    submitButton.textContent = 'Submit';
+    submitButton.style.margin = '15px';
+    submitButton.addEventListener('click', submitEditedBookValues);
+}
+function submitEditedBookValues(eventData){
+    const formContainer = eventData.target;
+    const book = formContainer.parentElement;
+    const bookId = parseInt(book.querySelector('p').getAttribute('data-id'));
+    const bookData = myLibrary[bookId];
+    const inputs = book.querySelectorAll('input');
+    bookData.title = inputs[0].value;
+    bookData.author = inputs[1].value;
+    bookData.numberOfPages = inputs[2].value;
+    myLibrary.splice(bookId, 1, bookData);
+    // persist library to local storage
+    localStorage.setItem('localLibrary', JSON.stringify(myLibrary));
+    displayLibrary(myLibrary);
+    formContainer.ownerDocument.defaultView.close();
+}
+function popupWindow(windowName, width, height){
+    const y = window.self.top.outerHeight / 2 + window.self.top.screenY - (height / 2);
+    const x = window.self.top.outerWidth / 2 + window.self.top.screenX - (width / 2);
+    return window.self.open('', windowName, 
+        `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no width=${width}, height=${height}, top=${y}, left=${x}`);
 }
 function createNewBookForm(){
     // remove new book button
