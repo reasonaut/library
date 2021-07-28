@@ -1,32 +1,47 @@
-function Book(title, author, numberOfPages, isRead){
-    this.title = title;
-    this.author = author;
-    this.numberOfPages = numberOfPages;
-    this.isRead = isRead;
+class Book {
+    constructor(title, author, numberOfPages, isRead) {
+        this.title = title;
+        this.author = author;
+        this.numberOfPages = numberOfPages;
+        this.isRead = isRead;
+    }    
 }
-function addBookToLibrary(book){
-    myLibrary.push(book);
-    // persist library to local storage
-    localStorage.setItem('localLibrary', JSON.stringify(myLibrary));
-    const bookEl = createBookElement(book);
-    // add book to library display
-    bookEl.setAttribute('data-id', parseInt(myLibrary[myLibrary.length - 1] + 1));
-    libraryContainer.appendChild(bookEl);
-}
-function displayLibrary(library){
-    libraryContainer.innerHTML = '';
-    for (i = 0; i < myLibrary.length; i++){
-        const bookObj = library[i];
-        // skip empty objects left in array from book deletions
-        if (bookObj.title === undefined) continue;
-        const bookEl = createBookElement(bookObj);
+class Library {
+    constructor(books) {
+        this.books = books;
+    }
+    libraryContainer = document.querySelector('#bookShelf');
+    addBookToLibrary(book){
+        this.books.push(book);
+        // persist library to local storage
+        localStorage.setItem('localLibrary', JSON.stringify(this.books));
+        const bookEl = createBookElement(book);
         // add book to library display
-        bookEl.setAttribute('data-id', i);
-        libraryContainer.appendChild(bookEl);
+        bookEl.setAttribute('data-id', parseInt(this.books[this.books.length - 1] + 1));
+        this.libraryContainer.appendChild(bookEl);
+    }
+    removeBookFromLibrary(bookIndex){
+        // insert empty object at deleted book's index to preserve span attribute references
+        this.books.splice(bookIndex, 1, {});
+        // update local storage
+        localStorage.setItem('localLibrary', JSON.stringify(myLibrary.books));
+        this.libraryContainer.querySelector(`span[data-id="${bookIndex}"]`).remove();
+    }
+    displayLibrary(){
+        this.libraryContainer.innerHTML = '';
+        for (let i = 0; i < this.books.length; i++){
+            const bookObj = this.books[i];
+            // skip empty objects left in array from book deletions
+            if (bookObj.title === undefined) continue;
+            const bookEl = createBookElement(bookObj);
+            // add book to library display
+            bookEl.setAttribute('data-id', i);
+            this.libraryContainer.appendChild(bookEl);
+        }
     }
 }
+
 function createBookElement(book){
-    const bookShelf = document.querySelector('#bookShelf');
     const bookContainer = document.createElement('span');
     bookContainer.appendChild(document.createElement('p'));
     // add title
@@ -43,7 +58,7 @@ function createBookElement(book){
     const delButton = delContainer.appendChild(document.createElement('button'));
     delButton.classList.add('delButton');
     delButton.innerText = 'Delete';
-    delButton.addEventListener('click', removeBookFromLibrary);
+    delButton.addEventListener('click', removeBookElement);
     // add buttons
     bookContainer.appendChild(readStatusContainer);
     bookContainer.appendChild(delContainer);
@@ -54,7 +69,7 @@ function createBookElement(book){
 function toggleReadStatus(eventData){
     // check current state
     const bookIndex = eventData.target.parentElement.parentElement.getAttribute('data-id');
-    const bookData = myLibrary[parseInt(bookIndex)];
+    const bookData = myLibrary.books[parseInt(bookIndex)];
     // update state
     if (bookData.isRead){
         eventData.target.classList.remove('isRead');
@@ -64,16 +79,11 @@ function toggleReadStatus(eventData){
         bookData.isRead = true;
     }
 }
-function removeBookFromLibrary(eventData){
+function removeBookElement(eventData) {
     const bookIndex = eventData.target.parentElement.parentElement.getAttribute('data-id');
-    // insert empty object at deleted book's index to preserve span attribute references
-    myLibrary.splice(bookIndex, 1, {});
-    // update local storage
-    localStorage.setItem('localLibrary', JSON.stringify(myLibrary));
-    libraryContainer.querySelector(`span[data-id="${bookIndex}"]`).remove();
+    myLibrary.removeBookFromLibrary(bookIndex);
 }
 function editBook(eventData){
-    eventData.stopPropogation();
     const book = eventData.target;
     let bookId;
     if (book.tagName.toLowerCase() === 'span') {
@@ -81,10 +91,11 @@ function editBook(eventData){
     } else {
         bookId = book.parentElement.getAttribute('data-id');
     }
-    const bookData = myLibrary[bookId];
+    const bookData = myLibrary.books[bookId];
     displayEditWindow(bookData, bookId);
 }
 function displayEditWindow(bookData, bookId){
+    if (!bookData || !bookId) return;
     const editWindow = popupWindow('editWindow', 250, 260);
     const windowBody = editWindow.document.body;
     windowBody.innerHTML = '';
@@ -122,15 +133,15 @@ function submitEditedBookValues(eventData){
     const formContainer = eventData.target;
     const book = formContainer.parentElement;
     const bookId = parseInt(book.querySelector('p').getAttribute('data-id'));
-    const bookData = myLibrary[bookId];
+    const bookData = myLibrary.books[bookId];
     const inputs = book.querySelectorAll('input');
     bookData.title = inputs[0].value;
     bookData.author = inputs[1].value;
     bookData.numberOfPages = inputs[2].value;
-    myLibrary.splice(bookId, 1, bookData);
+    myLibrary.books.splice(bookId, 1, bookData);
     // persist library to local storage
-    localStorage.setItem('localLibrary', JSON.stringify(myLibrary));
-    displayLibrary(myLibrary);
+    localStorage.setItem('localLibrary', JSON.stringify(myLibrary.books));
+    myLibrary.displayLibrary();
     formContainer.ownerDocument.defaultView.close();
 }
 function popupWindow(windowName, width, height){
@@ -142,7 +153,7 @@ function popupWindow(windowName, width, height){
 function createNewBookForm(){
     // remove new book button
     document.querySelector('#newBookContainer').style.display = 'none';
-    const formSpan = libraryContainer.appendChild(document.createElement('span'));
+    const formSpan = document.querySelector('#bookShelf').appendChild(document.createElement('span'));
     formSpan.id = 'newBookForm';
     const createNewBookForm = formSpan.appendChild(document.createElement('form'));
     // title
@@ -223,7 +234,7 @@ function createNewBook(eventData){
     const newBook = new Book(title, author, pages, isRead);
     newBookForm.remove();
     document.querySelector('#newBookContainer').style.display = 'block';
-    addBookToLibrary(newBook);
+    myLibrary.addBookToLibrary(newBook);
 }
 function cancelCreateNewBook(eventData){
     eventData.preventDefault();
@@ -231,7 +242,7 @@ function cancelCreateNewBook(eventData){
     newBookForm.remove();
     document.getElementById('newBookContainer').style.display = 'block';
 }
-// generate test books
+// test book data
 const testBook1 = {
     title: "Gulliver's Travels",
     author: "Jonathan Swift",
@@ -299,12 +310,12 @@ const testBook11 = {
     numberOfPages: 349
 }
 // check for locally stored library
-let myLibrary = localStorage.getItem('localLibrary');
-if (myLibrary) myLibrary = JSON.parse(myLibrary);
-if (!myLibrary){
-    myLibrary = [testBook1, testBook2, testBook3, testBook4, testBook5, testBook6, 
+let storedBooks = localStorage.getItem('localLibrary');
+if (storedBooks) storedBooks = JSON.parse(storedBooks);
+if (!storedBooks){
+    storedBooks = [testBook1, testBook2, testBook3, testBook4, testBook5, testBook6, 
         testBook7, testBook8, testBook9, testBook10, testBook11];
 }
+myLibrary = new Library(storedBooks);
 document.querySelector('#newBookButton').addEventListener('click', createNewBookForm);
-const libraryContainer = document.querySelector('#bookShelf');
-displayLibrary(myLibrary);
+myLibrary.displayLibrary();
